@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import './App.css';
 import app from "./firebase.init";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -62,6 +62,7 @@ function App() {
           const user = userCredential.user;
           setEmail('')
           setPassword('')
+          handelVarification()
           console.log(user)
         })
         .catch((error) => {
@@ -71,6 +72,20 @@ function App() {
         });
     }
 
+  }
+  const handelVarification=()=>{
+    sendEmailVerification(auth.currentUser)
+  .then(() => {
+    // Email verification sent!
+    // ...
+  });
+  }
+  const handelForgetPassword=()=>{
+    sendPasswordResetEmail(auth, email)
+  .then(() => {
+    // Password reset email sent!
+    // ..
+  })
   }
   return (
     <div >
@@ -94,6 +109,7 @@ function App() {
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check onChange={handelChecked} type="checkbox" label="Already Register?" />
             </Form.Group>
+            <Button onClick={handelForgetPassword} variant="link">Forget Password</Button>
           </Form.Group>
           <Button variant="primary" type="submit">
             {register ? 'Login' : "Submit"}
