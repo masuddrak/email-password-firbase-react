@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import './App.css';
 import app from "./firebase.init";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,6 +8,7 @@ import { useState } from "react";
 const auth = getAuth(app);
 
 function App() {
+  const [name, setName] = useState('')
   const [register, setRegister] = useState(false)
   const [error, setError] = useState('')
   const [validated, setValidated] = useState(false);
@@ -15,6 +16,9 @@ function App() {
   const [password, setPassword] = useState('')
 
   // email,password handelar
+  const heandelName=(event)=>{
+    setName(event.target.value)
+  }
   const handelEmail = (event) => {
     setEmail(event.target.value)
   }
@@ -63,6 +67,7 @@ function App() {
           setEmail('')
           setPassword('')
           handelVarification()
+          setUserName()
           console.log(user)
         })
         .catch((error) => {
@@ -73,25 +78,45 @@ function App() {
     }
 
   }
-  const handelVarification=()=>{
+  const handelVarification = () => {
     sendEmailVerification(auth.currentUser)
-  .then(() => {
-    // Email verification sent!
-    // ...
-  });
+      .then(() => {
+        // Email verification sent!
+        // ...
+      });
   }
-  const handelForgetPassword=()=>{
+  const handelForgetPassword = () => {
     sendPasswordResetEmail(auth, email)
-  .then(() => {
-    // Password reset email sent!
-    // ..
-  })
+      .then(() => {
+        // Password reset email sent!
+        // ..
+      })
+  }
+  const setUserName = () => {
+    updateProfile(auth.currentUser, {
+      displayName:name
+    }).then(() => {
+      // Profile updated!
+      console.log('set a name')
+      // ...
+    }).catch((error) => {
+      // An error occurred
+      // ...
+    });
+
   }
   return (
     <div >
       <h2 className="text-center text-primary mt-4">Now {register ? 'Login' : "Register"}!!</h2>
       <div className="w-50 mx-auto mt-3">
         <Form noValidate validated={validated} onSubmit={handelSubmit}>
+          {!register && <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>Full Name</Form.Label>
+            <Form.Control onBlur={heandelName} type="text" placeholder="Enter name" required />
+            <Form.Control.Feedback type="invalid">
+              Please type fFull  Name.
+            </Form.Control.Feedback>
+          </Form.Group>}
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
             <Form.Control onBlur={handelEmail} type="email" placeholder="Enter email" required />
